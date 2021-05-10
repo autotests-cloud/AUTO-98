@@ -49,25 +49,11 @@ public class AppTests extends TestBase {
       ElementsCollection routeElements = $$(".route-list .route-list-item__time").snapshot();
       ArrayList<Integer> timeValues = new ArrayList<>();
       routeElements.forEach(item -> {
-        String resultTime = item.text().substring(1);
-        Pattern pattern = Pattern.compile("\\d+");
-        Matcher matcher = pattern.matcher(resultTime);
-        int hours = 0;
-        int minutes = 0;
-        long matcherCount = matcher.results().count();
-        matcher.reset();
-        assertTrue(matcherCount > 0);
-        if (matcherCount > 1 && matcher.find()) {
-          hours = Integer.parseInt(matcher.group()) * 60;
-        }
-        if (matcher.find()) {
-          minutes = Integer.parseInt(matcher.group());
-        }
-        timeValues.add(hours + minutes);
+        String timeFromWebElement = item.text().substring(1);
+        timeValues.add(countTime(timeFromWebElement));
       });
-      assertEquals(timeValues.get(0), Collections.min(timeValues));
+      assertEquals(Collections.min(timeValues), timeValues.get(0));
     });
-
   }
 
   @Test
@@ -98,5 +84,22 @@ public class AppTests extends TestBase {
 
       assertThat(consoleLogs).doesNotContain(errorText);
     });
+  }
+
+  private Integer countTime(String timeFromWebElement) {
+    Pattern pattern = Pattern.compile("\\d+");
+    Matcher matcher = pattern.matcher(timeFromWebElement);
+    int hours = 0;
+    int minutes = 0;
+    long matcherCount = matcher.results().count();
+    matcher.reset();
+    assertTrue(matcherCount > 0);
+    if (matcherCount > 1 && matcher.find()) {
+      hours = Integer.parseInt(matcher.group()) * 60;
+    }
+    if (matcher.find()) {
+      minutes = Integer.parseInt(matcher.group());
+    }
+    return (hours + minutes);
   }
 }
